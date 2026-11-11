@@ -1,0 +1,8 @@
+{
+  "name": "mqtt-mcp-home-simulator",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mqtt": "^5.16.1"
+  }
+}

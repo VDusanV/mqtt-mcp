@@ -1,0 +1,27 @@
+services:
+  emqx:
+    image: emqx/emqx:5.8.6
+    container_name: mqtt-mcp-emqx
+    ports:
+      - "1883:1883"   # MQTT
+      - "18083:18083" # EMQX dashboard (admin / public)
+    volumes:
+      # Dev-only ACL that allows subscribing to '#'. EMQX denies it by default.
+      - ./emqx/acl.conf:/opt/emqx/etc/acl.conf:ro
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  simulator:
+    build: ./simulator
+    container_name: mqtt-mcp-simulator
+    environment:
+      MQTT_URL: mqtt://emqx:1883
+      PUBLISH_INTERVAL_MS: "5000"
+      FLAKY_AFTER_MS: "120000"
+    depends_on:
+      emqx:
+        condition: service_healthy
+    restart: unless-stopped
